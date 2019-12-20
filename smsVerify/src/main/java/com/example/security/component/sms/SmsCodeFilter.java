@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Component
 public class SmsCodeFilter extends OncePerRequestFilter {
     @Autowired
     private AuthenticationFailureHandler authenticationFailureHandler;
@@ -40,11 +42,13 @@ public class SmsCodeFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
     private void validateSmsCode(ServletWebRequest servletWebRequest) throws ServletRequestBindingException {
-        String smsCodeInRequest = ServletRequestUtils.getStringParameter(servletWebRequest.getRequest(), "smscode");
+        String smsCodeInRequest = ServletRequestUtils.getStringParameter(servletWebRequest.getRequest(), "smsCode");
+        System.out.println("----SmsCodeFilter.java smsCodeInRequest = " + smsCodeInRequest);
         String mobile = ServletRequestUtils.getStringParameter(servletWebRequest.getRequest(), "mobile");
+        System.out.println("----SmsCodeFilter.java mobile = " + mobile);
         SmsCode codeInSession = (SmsCode) sessionStrategy.getAttribute(servletWebRequest, ValidateController.SESSION_KEY_SMS_CODE + mobile);
+        System.out.println("----SmsCodeFilter.java codeInSession = " + codeInSession.toString());
 
         if(StringUtils.isBlank(smsCodeInRequest)){
             throw new ValidateCodeException("验证码不能为空！");
@@ -53,11 +57,11 @@ public class SmsCodeFilter extends OncePerRequestFilter {
             throw new ValidateCodeException("验证码不存在！");
         }
         if (codeInSession.isExpire()){
-            sessionStrategy.removeAttribute(servletWebRequest, ValidateController.SESSION_KEY_IMAGE_CODE);
+            sessionStrategy.removeAttribute(servletWebRequest, ValidateController.SESSION_KEY_SMS_CODE);
             throw new ValidateCodeException("验证码已过期！");
         }if (!StringUtils.equalsIgnoreCase(codeInSession.getCode(), smsCodeInRequest)){
             throw new ValidateCodeException("验证码不正确！");
         }
-        sessionStrategy.removeAttribute(servletWebRequest, ValidateController.SESSION_KEY_IMAGE_CODE);
+        sessionStrategy.removeAttribute(servletWebRequest, ValidateController.SESSION_KEY_SMS_CODE);
     }
 }

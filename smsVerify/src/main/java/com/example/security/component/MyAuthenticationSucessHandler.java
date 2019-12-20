@@ -23,23 +23,23 @@ public class MyAuthenticationSucessHandler implements AuthenticationSuccessHandl
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     @Autowired
     private ObjectMapper mapper;
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        FilterChain chain,
-                                        Authentication authentication) throws IOException, ServletException {
-
-    }
+//    @Override
+//    public void onAuthenticationSuccess(HttpServletRequest request,
+//                                        HttpServletResponse response,
+//                                        FilterChain chain,
+//                                        Authentication authentication) throws IOException, ServletException {
+//
+//    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,
                                         Authentication authentication) throws IOException, ServletException {
-        httpServletResponse.setContentType("application/json;charset=utf-8");
+        //httpServletResponse.setContentType("application/json;charset=utf-8");
         //httpServletResponse.getWriter().write(mapper.writeValueAsString(authentication));//将信息直接打印出来
-        SavedRequest savedRequest = requestCache.getRequest(httpServletRequest, httpServletResponse);
+        //SavedRequest savedRequest = requestCache.getRequest(httpServletRequest, httpServletResponse);
         //redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/hello");
-        System.out.println("-----: " + savedRequest.getRedirectUrl().toString());
-        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, savedRequest.getRedirectUrl());
+        //System.out.println("-----: " + savedRequest.getRedirectUrl().toString());
+        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/index");
     }
 }
