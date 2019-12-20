@@ -7,7 +7,6 @@ import com.example.security.service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -33,24 +32,23 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private MyUserDetailService userDetailsService;
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http//.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) //将validateCodeFilter拦截器加到UsernamePasswordAuthenticationFilter之前
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class) //将validateCodeFilter拦截器加到UsernamePasswordAuthenticationFilter之前
                 .formLogin()//表单形式登录
                 //.loginPage("/login.html") //指定跳转到登录页面的请求URL
                 .loginPage("/authentication/require") //登录跳转 URL 配合 BrowserSecurityController中的requireAuthentication使用
                 .loginProcessingUrl("/login") //对应登录页面form表单的action = "/login"
                 .successHandler(authenticationSucessHandler)   //处理登录成功
                 .failureHandler(authenticationFailureHandler)  //处理登录失败
-                //.and()
-                //.rememberMe() //记住我功能
-                //.tokenRepository(persistentTokenRepository()) //配置token持久化仓库
-                //.tokenValiditySeconds(3600)  //remember过期时间，单位秒
-                //.userDetailsService(userDetailsService)// 处理自动登录逻辑
+                .and()
+                .rememberMe() //记住我功能
+                .tokenRepository(persistentTokenRepository()) //配置token持久化仓库
+                .tokenValiditySeconds(3600)  //remember过期时间，单位秒
+                .userDetailsService(userDetailsService)// 处理自动登录逻辑
                 .and()
                 .authorizeRequests() //授权配置
-                .antMatchers("/authentication/require","/login.html","/code/image", "/code/sms").permitAll() //表示跳转到登录页面的请求不被拦截
+                .antMatchers("/authentication/require","/login.html","/code/image").permitAll() //表示跳转到登录页面的请求不被拦截
                 .anyRequest() //所有请求
                 .authenticated()//都要认证
                 .and().csrf().disable();// 关闭CSRF攻击防御

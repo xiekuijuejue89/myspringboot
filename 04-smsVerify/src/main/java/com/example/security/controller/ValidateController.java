@@ -1,8 +1,6 @@
 package com.example.security.controller;
 
 import com.example.security.bean.ImageCode;
-import com.example.security.bean.SmsCode;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,16 +18,9 @@ import java.util.Random;
 @RestController
 public class ValidateController {
     public final static String SESSION_KEY_IMAGE_CODE = "SESSION_KEY_IMAGE_CODE";
-    public final static String SESSION_KEY_SMS_CODE = "SESSION_KEY_SMS_CODE";
 
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
-    /**
-     * 图片验证码
-     * @param request
-     * @param response
-     * @throws IOException
-     */
     @GetMapping("/code/image")
     public void createCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ImageCode imageCode = createImageCode();
@@ -37,17 +28,6 @@ public class ValidateController {
         ImageIO.write(imageCode.getImage(), "jpeg", response.getOutputStream());
     }
 
-    /**
-     * 短信验证码
-     */
-    @GetMapping("/code/sms")
-    public void createSmsCode(HttpServletRequest request, HttpServletResponse response, String mobile){
-        SmsCode smsCode = createSMSCode();
-        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY_SMS_CODE + mobile, smsCode);
-        System.out.println("mobile = " + mobile);
-        //输出验证码到控制台代替短信发送服务
-        System.out.println("您的登录验证码为：" + smsCode.getCode() + ", 有效时间为60秒");
-    }
 
     private ImageCode createImageCode(){
         int width = 100;//验证码图片宽度
@@ -90,10 +70,5 @@ public class ValidateController {
         int g = fc + random.nextInt(bc - fc);
         int b = fc + random.nextInt(bc - fc);
         return new Color(r, g, b);
-    }
-
-    public SmsCode createSMSCode(){
-        String code = RandomStringUtils.randomNumeric(6);
-        return new SmsCode(code, 60);
     }
 }
