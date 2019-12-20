@@ -1,5 +1,6 @@
 package com.example.security.component.sms;
 
+import com.alibaba.fastjson.JSON;
 import com.example.security.utils.PrintUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -28,6 +29,7 @@ public class SmsAuthenticationFilter extends AbstractAuthenticationProcessingFil
         if (this.postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         } else {
+            System.out.println("-----SmsAuthenticationFilter request " + JSON.toJSONString(request));
             PrintUtils.showRequestParmas(request);
             String mobile = this.obtainMobile(request);
 
