@@ -1,5 +1,6 @@
 package com.example.security.component.sms;
 
+import com.example.security.utils.PrintUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -7,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ public class SmsAuthenticationFilter extends AbstractAuthenticationProcessingFil
         if (this.postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         } else {
+            PrintUtils.showRequestParmas(request);
             String mobile = this.obtainMobile(request);
 
             if (mobile == null) {
